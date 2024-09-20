@@ -1,5 +1,5 @@
-import { createSvgLine, createSvgPolygon, createSvgCircle, createSvgText } from "./svg.js";
-import Controller from "./controller.js";
+import { createSvgLine, createSvgPolygon, createSvgCircle, createSvgText } from "../../../tool/svg.js";
+import Controller from "../../../tool/controller.js";
 
 // constants
 const OPEN_WEATHER_APP_KEY = "65d8e433543028fb83bd8709bebfad8f";
@@ -44,68 +44,34 @@ class WeatherController extends Controller {
 	get messageOutput() { return document.querySelector("footer>input.message");
 	}
 
-	// Getters for computed properties used in the forecast
-	get minTemperature() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.main.temp_min), Infinity) - 273.15;
+	minTemperature(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.main.temp_min), Infinity) - 273.15;
 	}
-	get maxTemperature() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.main.temp_max), 0) - 273.15;
+	
+	maxTemperature(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.main.temp_max), 0) - 273.15;
 	}
-	get totalRain() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => accu + (element.rain ? element.rain["3h"] : 0), 0);
+	
+	totalRain(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => accu + (element.rain ? element.rain["3h"] : 0), 0);
 	}
-	get averageHumidity() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => accu + element.main.humidity, 0) / dayThreeHourForecasts.length;
+	
+	averageHumidity(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => accu + element.main.humidity, 0) / dayThreeHourForecasts.length;
 	}
-	get averagePressure() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => accu + element.main.pressure, 0) / dayThreeHourForecasts.length;
+	
+	averagePressure(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => accu + element.main.pressure, 0) / dayThreeHourForecasts.length;
 	}
-	get minVisibility() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.visibility), Infinity);
+	
+	minVisibility(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.visibility), Infinity);
 	}
-	get maxVisibility() {
-		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.visibility), 0);
+	
+	maxVisibility(dayThreeHourForecasts) {
+		return dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.visibility), 0);
 	}
-	getDateText(threeHourForecast) {
-		return threeHourForecast
-			? threeHourForecast.dt_txt.substring(0, threeHourForecast.dt_txt.indexOf(' '))
-			: null;
-	}
-	getTemperature(minTemperature, maxTemperature) {
-		return `${Math.round(minTemperature)}°C - ${Math.round(maxTemperature)}°C`;
-	}
-	getRain(rain) {
-		return `${Math.round(rain)} l/m²`;
-	}
-	getHumidity(humidity) {
-		return `${Math.round(humidity)}%`;
-	}
-	getPressure(pressure) {
-		return `${Math.round(pressure)} hPa`;
-	}
-	getVisibility(minVisibility, maxVisibility) {
-		return `${Math.round(minVisibility)} - ${Math.round(maxVisibility)}`;
-	}
-	get lowerBoundTemperature() {
-        return (dayThreeHourForecasts) => 
-            Math.floor(dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.main.temp_min), Infinity) - 273.15);
-    }
-    get upperBoundTemperature() {
-        return (dayThreeHourForecasts) => 
-            Math.ceil(dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.main.temp_max), 0) - 273.15);
-    }
-    get degreePixels() {
-        return (dayThreeHourForecasts) => {
-            const lowerBoundTemperature = this.lowerBoundTemperature(dayThreeHourForecasts);
-            const upperBoundTemperature = this.upperBoundTemperature(dayThreeHourForecasts);
-            return 100 / (upperBoundTemperature - lowerBoundTemperature);
-        };
-    }
-    get timePixels() {
-        return (dayThreeHourForecasts) => 300 / Math.max(1, dayThreeHourForecasts.length - 1);
-    }
-
-
+	
 	/**
 	 * Handles querying a location and the associated weather forecast.
 	 */
@@ -137,7 +103,9 @@ class WeatherController extends Controller {
 			weatherForecast.list.push(null);		
 
 			for (const threeHourForecast of weatherForecast.list) {
-				const dateText = this.getDateText(threeHourForecast);
+				const dateText = threeHourForecast
+					? threeHourForecast.dt_txt.substring(0, threeHourForecast.dt_txt.indexOf(' '))
+					: null;
 				// console.log(dateText);
 
 				if (dayForecast.dateText !== dateText) {
@@ -147,15 +115,22 @@ class WeatherController extends Controller {
 
 						const dayThreeHourForecasts = dayForecast.list;
 						const date = new Date(dayThreeHourForecasts[0].dt * 1000);
+						const minTemperature = this.minTemperature(dayThreeHourForecasts);
+						const maxTemperature =  this.maxTemperature(dayThreeHourForecasts);
+						const rain = this.totalRain(dayThreeHourForecasts);
+						const humidity = this.averageHumidity(dayThreeHourForecasts);
+						const pressure = this.averagePressure(dayThreeHourForecasts);
+						const minVisibility = this.minVisibility(dayThreeHourForecasts);
+						const maxVisibility = dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.visibility), 0);
 
 						const dateButton = tableRow.querySelector("td.date>button");
 						dateButton.innerText = date.toLocaleDateString();
 						dateButton.addEventListener("click", event => this.processDayWeatherForecast(weatherForecast.city, date, dayThreeHourForecasts));
-						tableRow.querySelector("td.temperature").innerText = this.getTemperature;
-						tableRow.querySelector("td.rain").innerText = this.getRain;
-						tableRow.querySelector("td.humidity").innerText = this.getHumidity;
-						tableRow.querySelector("td.pressure").innerText =this.getPressure;
-						tableRow.querySelector("td.visibility").innerText = this.getVisibility;
+						tableRow.querySelector("td.temperature").innerText = Math.round(minTemperature) + "°C - " + Math.round(maxTemperature) + "°C";
+						tableRow.querySelector("td.rain").innerText = Math.round(rain) + " l/m²";
+						tableRow.querySelector("td.humidity").innerText = Math.round(humidity) + "%";
+						tableRow.querySelector("td.pressure").innerText = Math.round(pressure) + " hPa";
+						tableRow.querySelector("td.visibility").innerText = Math.round(minVisibility) + " - " + Math.round(maxVisibility);
 					}
 
 					dayForecast.dateText = dateText;
@@ -240,8 +215,8 @@ class WeatherController extends Controller {
 	async displayDayTemperatureForecast (threeHourForecasts) {
 		const graph = this.detailsSection.querySelector("span.temp>svg");
 
-		const lowerBoundTemperature = this.lowerBoundTemperature;
-		const upperBoundTemperature = this.upperBoundTemperature;
+		const lowerBoundTemperature = Math.floor(threeHourForecasts.reduce((accu, element) => Math.min(accu, element.main.temp_min), Infinity) - 273.15);
+		const upperBoundTemperature = Math.ceil(threeHourForecasts.reduce((accu, element) => Math.max(accu, element.main.temp_max), 0) - 273.15);
 		const degreePixels = 100 / (upperBoundTemperature - lowerBoundTemperature);
 		const timePixels = 300 / Math.max(1, threeHourForecasts.length - 1);
 
