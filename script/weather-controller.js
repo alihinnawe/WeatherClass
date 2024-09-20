@@ -1,8 +1,8 @@
 import { createSvgLine, createSvgPolygon, createSvgCircle, createSvgText } from "./svg.js";
-import Controller from ".controller.js";
+import Controller from "./controller.js";
 
 // constants
-const OPEN_WEATHER_APP_KEY = "65d8e433543028fb83bd8709bebfad8f";
+const OPEN_WEATHER_APP_KEY = "your own key";
 const OPEN_WEATHER_APP_ORIGIN = "https://api.openweathermap.org";
 
 
