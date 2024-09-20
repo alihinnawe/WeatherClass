@@ -48,27 +48,21 @@ class WeatherController extends Controller {
 	get minTemperature() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.main.temp_min), Infinity) - 273.15;
 	}
-
 	get maxTemperature() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.main.temp_max), 0) - 273.15;
 	}
-
 	get totalRain() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => accu + (element.rain ? element.rain["3h"] : 0), 0);
 	}
-
 	get averageHumidity() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => accu + element.main.humidity, 0) / dayThreeHourForecasts.length;
 	}
-
 	get averagePressure() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => accu + element.main.pressure, 0) / dayThreeHourForecasts.length;
 	}
-
 	get minVisibility() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.visibility), Infinity);
 	}
-
 	get maxVisibility() {
 		return dayThreeHourForecasts => dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.visibility), 0);
 	}
@@ -77,43 +71,29 @@ class WeatherController extends Controller {
 			? threeHourForecast.dt_txt.substring(0, threeHourForecast.dt_txt.indexOf(' '))
 			: null;
 	}
-	// Getter for temperature
 	getTemperature(minTemperature, maxTemperature) {
 		return `${Math.round(minTemperature)}°C - ${Math.round(maxTemperature)}°C`;
 	}
-
-	// Getter for rain
 	getRain(rain) {
 		return `${Math.round(rain)} l/m²`;
 	}
-
-	// Getter for humidity
 	getHumidity(humidity) {
 		return `${Math.round(humidity)}%`;
 	}
-
-	// Getter for pressure
 	getPressure(pressure) {
 		return `${Math.round(pressure)} hPa`;
 	}
-
-	// Getter for visibility
 	getVisibility(minVisibility, maxVisibility) {
 		return `${Math.round(minVisibility)} - ${Math.round(maxVisibility)}`;
 	}
-
 	get lowerBoundTemperature() {
         return (dayThreeHourForecasts) => 
             Math.floor(dayThreeHourForecasts.reduce((accu, element) => Math.min(accu, element.main.temp_min), Infinity) - 273.15);
     }
-
-    // Getter for upper bound temperature (max temperature)
     get upperBoundTemperature() {
         return (dayThreeHourForecasts) => 
             Math.ceil(dayThreeHourForecasts.reduce((accu, element) => Math.max(accu, element.main.temp_max), 0) - 273.15);
     }
-
-    // Getter for degree pixels calculation
     get degreePixels() {
         return (dayThreeHourForecasts) => {
             const lowerBoundTemperature = this.lowerBoundTemperature(dayThreeHourForecasts);
@@ -121,11 +101,11 @@ class WeatherController extends Controller {
             return 100 / (upperBoundTemperature - lowerBoundTemperature);
         };
     }
-
-    // Getter for time pixels calculation
     get timePixels() {
         return (dayThreeHourForecasts) => 300 / Math.max(1, dayThreeHourForecasts.length - 1);
     }
+
+	
 	/**
 	 * Handles querying a location and the associated weather forecast.
 	 */
