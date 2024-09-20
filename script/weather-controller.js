@@ -1,5 +1,5 @@
-import { createSvgLine, createSvgPolygon, createSvgCircle, createSvgText } from "../../../tool/svg.js";
-import Controller from "../../../tool/controller.js";
+import { createSvgLine, createSvgPolygon, createSvgCircle, createSvgText } from "./svg.js";
+import Controller from ".controller.js";
 
 // constants
 const OPEN_WEATHER_APP_KEY = "65d8e433543028fb83bd8709bebfad8f";
@@ -105,7 +105,7 @@ class WeatherController extends Controller {
         return (dayThreeHourForecasts) => 300 / Math.max(1, dayThreeHourForecasts.length - 1);
     }
 
-	
+
 	/**
 	 * Handles querying a location and the associated weather forecast.
 	 */
