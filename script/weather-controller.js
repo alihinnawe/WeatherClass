@@ -2,7 +2,7 @@ import { createSvgLine, createSvgPolygon, createSvgCircle, createSvgText } from 
 import Controller from './controller.js';
 
 // constants
-const OPEN_WEATHER_APP_KEY = "65d8e433543028fb83bd8709bebfad8f";
+const OPEN_WEATHER_APP_KEY = "your own weather api key";
 const OPEN_WEATHER_APP_ORIGIN = "https://api.openweathermap.org";
 
 
